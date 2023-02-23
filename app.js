@@ -90,18 +90,19 @@ app.post("/appenddata", async (req, res) => {
     res.status(200).send(response)
 })
 
-app.delete("/deletefile", async (req, res) => {
+app.post("/deletefile", async (req, res) => {
+
+    const s3URL = req.body.s3uri
+    const bucketFromUrl = s3URL.split("/")[2].split(".")[0]
+    const fileName = s3URL.split("/")[3]
+
     const params = {
-        Bucket: bucket,
-        Key: 'test.txt'
+        Bucket: bucketFromUrl,
+        Key: fileName
     }
     await s3.deleteObject(params).promise();
 
-    const fileURL = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`
-    const response = {
-        "s3uri": fileURL
-    }
-    res.status(200).send(response)
+    res.sendStatus(200)
 })
 
 app.listen(3000, () => {
